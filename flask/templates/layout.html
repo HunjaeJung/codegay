@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+  <head>
+    <title>{% block title %}Flask basics{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+    <p>this is from layout</p>
+    {% block script %}{% endblock %}
+  </body>
+</html>
