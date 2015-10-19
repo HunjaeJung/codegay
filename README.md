@@ -13,6 +13,6 @@ I'm a software engineer in [ab180](http://ab180.co) which is a mobile deeplinkin
 - every 30 minutes
 - one day, one commit
 
-### Resolution
+### Resolutions
 1. (Jan. 2016 Lecture) Open 10 weeks data science lecture (in Python)
 2. (Sep. 2016 Deview) Present about the application of mobile deeplinking technologies
