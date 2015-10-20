@@ -89,62 +89,66 @@ def do_crawl(job_type):
                 idx = idx + 1
                 print(str(idx) + "/" +  str(len(data)) + " crawling..")
 
-                name = info[0]
-                country = info[2]
-                kid = info[1]
-                kid = "0016049207"
+                try:
+                    name = info[0]
+                    country = info[2]
+                    kid = info[1]
+                    kid = "0016049207"
 
-                url = base_url.replace("{{kid}}", kid)
-                soup = BeautifulSoup(urlopen(url).read())
+                    url = base_url.replace("{{kid}}", kid)
+                    soup = BeautifulSoup(urlopen(url).read())
 
-                info_detail = " ".join(soup.select("div.widthhalf > div")[2].get_text().replace('\t','').replace('\n','').strip().split())
+                    info_detail = " ".join(soup.select("div.widthhalf > div")[2].get_text().replace('\t','').replace('\n','').strip().split())
 
-                addr = info_detail.split('Phone')[0].strip()
+                    addr = info_detail.split('Phone')[0].strip()
 
-                if "Fax" in info_detail:
-                    phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
-                else:
-                    phone = info_detail.split('Phone:')[1].split('Email')[0].strip()
+                    if "Fax" in info_detail:
+                        phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
+                    else:
+                        phone = info_detail.split('Phone:')[1].split('Email')[0].strip()
 
-                email = info_detail.split('Email:')[1].split('Website')[0].strip()
+                    email = info_detail.split('Email:')[1].split('Website')[0].strip()
 
-                if "Website" in info_detail:
-                    website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
-                else:
-                    website = ""
+                    if "Website" in info_detail:
+                        website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
+                    else:
+                        website = ""
 
-                product_detail = soup.select("div.widthfull > div > div > div > ul.ultree")
-                product_list = product_detail[0].select('> li')
-                trade_show = product_detail[1].get_text().strip()
+                    product_detail = soup.select("div.widthfull > div > div > div > ul.ultree")
+                    product_list = product_detail[0].select('> li')
+                    trade_show = product_detail[1].get_text().strip()
 
-                big_categories = []
-                middle_categories = []
-                small_categories = []
+                    big_categories = []
+                    middle_categories = []
+                    small_categories = []
 
-                # 대분류
-                for product in product_list:
-                    big_one_name = product.select('a')[0].get_text().strip()
-                    big_categories.append(big_one_name)
+                    # 대분류
+                    for product in product_list:
+                        big_one_name = product.select('a')[0].get_text().strip()
+                        big_categories.append(big_one_name)
 
-                    # 중분류
-                    middle_list = product.select('> ul')
-                    for middle_one in middle_list:
-                        middle_one_name = middle_one.select('a')[0].get_text().strip()
-                        middle_categories.append(middle_one_name)
+                        # 중분류
+                        middle_list = product.select('> ul')
+                        for middle_one in middle_list:
+                            middle_one_name = middle_one.select('a')[0].get_text().strip()
+                            middle_categories.append(middle_one_name)
 
-                        # 소분류
-                        small_list = middle_one.select('ul')
-                        for small_one in small_list:
-                            small_one_name = small_one.select('a')[0].get_text().strip()
-                            small_categories.append(small_one_name)
+                            # 소분류
+                            small_list = middle_one.select('ul')
+                            for small_one in small_list:
+                                small_one_name = small_one.select('a')[0].get_text().strip()
+                                small_categories.append(small_one_name)
 
-                big_categories_str = ", ".join(big_categories)
-                middle_categories_str = ", ".join(middle_categories)
-                small_categories_str = ", ".join(small_categories)
+                    big_categories_str = ", ".join(big_categories)
+                    middle_categories_str = ", ".join(middle_categories)
+                    small_categories_str = ", ".join(small_categories)
 
-                row = [name, country, addr, phone, email, website, big_categories_str, middle_categories_str, small_categories_str, trade_show]
+                    row = [name, country, addr, phone, email, website, big_categories_str, middle_categories_str, small_categories_str, trade_show]
 
-                writer.writerow(row)
+                    writer.writerow(row)
+                except:
+                    print(str(idx) + "/" +  str(len(data)) + " crawling.. FAILED============================")
+
 
     else:
         job2_file_name = "./exhibitor-detail.csv"
