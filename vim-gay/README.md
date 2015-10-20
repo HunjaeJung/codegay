@@ -1,18 +1,32 @@
 # vim-gay (based on Vim 7.4)
 
-### Tips
-- 숫자 위에서 <CTRL-A>: +1 (16진수나 8진수에서도 가능. ex. 16진수=>0x0a, 8진수=>010)
-- 숫자 위에서 <CTRL-X>: -1 (16진수나 8진수에서도 가능)
-- 복사하기(`y`)하면 `~/.viminfo` 파일에 레지스터(임시 버퍼)를 기록
-- <CTRL-^>: 이전 열었던 파일 열기 (CTRL+6을 의미함. 원래 <CTRL> 키와 조합된 문자 표기시엔 대문자로 표기)
-- `ps -ef | vim -`하면 `ps -ef`의 결과물을 모두 Vim으로 읽을 수 있음. '-'는 표준 입력을 의미. 명령 결과가 길거나, 실행 결과를 편집해야할 때 유용.
+### 파일관련
 - `:w`로 저장하면 변경사항 없더라도 디스크 I/O. 변경사항 있을때만 저장하는 `:up` 권장.
 - `:x`는 `:up`+`:q`와 같다. `:wq` 대신 `x` 권장.
-- `sp`(split), `vs`(vertical split)
-- [#]<CTRL-W> v 하면 현재 보고 있는 화면을 [#]행만큼 주고 vertically split. 다른 행을 동시에 보고 있을때 유용. (물론 [#]<CTRL-W> s도 존재)
-- <CTRL-W> w: 다음 창으로 이동 
-- <CTRL-W> p: 이전 창으로 이동
+- 복사하기(`y`)하면 `~/.viminfo` 파일에 레지스터(임시 버퍼)를 기록
+- `<CTRL-^>`: 이전 열었던 파일 열기 (CTRL+6을 의미함. 원래 <CTRL> 키와 조합된 문자 표기시엔 대문자로 표기)
+- `ps -ef | vim -`하면 `ps -ef`의 결과물을 모두 Vim으로 읽을 수 있음. '-'는 표준 입력을 의미. 명령 결과가 길거나, 실행 결과를 편집해야할 때 유용.
+
+### 창분할관련
+- `:sp`(split), `:vs`(vertical split)
+- `[#]<CTRL-W> v` 하면 현재 보고 있는 화면을 [#]행만큼 주고 vertically split. 다른 행을 동시에 보고 있을때 유용. (물론 `[#]<CTRL-W> s`도 존재)
+- `<CTRL-W> w`: 다음 창으로 이동 
+- `<CTRL-W> p`: 이전 창으로 이동
+
+### 편집기술
+- 숫자 위에서 `<CTRL-A>`: +1 (16진수나 8진수에서도 가능. ex. 16진수=>0x0a, 8진수=>010)
+- 숫자 위에서 `<CTRL-X>`: -1 (16진수나 8진수에서도 가능)
+- `H`, `L`, `M`: 맨 위/아래/가운데로 커서 이동.
+- `0`(or `^`), `$`: 맨 앞/뒤으로 커서 이동
+- `w`, `e`, `b`: 단어 단위로 이동
+- `W`, `E`, `B`: 의미 단어 단위로 이동
 
 
 ### Tips for Linux
 - 셸에서 `man ascii`: 전체 ASCII 테이블 관람
+
+### References
+- [Markdown Preview for Vim](https://github.com/shime/vim-livedown)
+- [Vim+Tmux workshop](https://github.com/nicknisi/vim-workshop)
+
+
