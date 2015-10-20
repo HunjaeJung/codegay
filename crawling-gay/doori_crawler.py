@@ -89,9 +89,6 @@ def do_crawl(job_type):
                 idx = idx + 1
                 print(str(idx) + "/" +  str(len(data)) + " crawling..")
 
-                if idx==5:
-                    return
-
                 name = info[0]
                 country = info[2]
                 kid = info[1]
@@ -147,8 +144,8 @@ def do_crawl(job_type):
             for row in reader:
                 data.append(row)
 
-        print(data[0])
         save_spreadsheet("exhibitors.xlsx", data)
+        print("exhibitors.xlsx file is succesfully created.")
 
 
 def save_spreadsheet(filename, data):
