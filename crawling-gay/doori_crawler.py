@@ -92,15 +92,26 @@ def do_crawl(job_type):
                 name = info[0]
                 country = info[2]
                 kid = info[1]
+                kid = "0016049207"
 
                 url = base_url.replace("{{kid}}", kid)
                 soup = BeautifulSoup(urlopen(url).read())
 
                 info_detail = " ".join(soup.select("div.widthhalf > div")[2].get_text().replace('\t','').replace('\n','').strip().split())
+
                 addr = info_detail.split('Phone')[0].strip()
-                phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
+
+                if "Fax" in info_detail:
+                    phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
+                else:
+                    phone = info_detail.split('Phone:')[1].split('Email')[0].strip()
+
                 email = info_detail.split('Email:')[1].split('Website')[0].strip()
-                website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
+
+                if "Website" in info_detail:
+                    website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
+                else:
+                    website = ""
 
                 product_detail = soup.select("div.widthfull > div > div > div > ul.ultree")
                 product_list = product_detail[0].select('> li')
