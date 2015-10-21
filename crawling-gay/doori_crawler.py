@@ -44,125 +44,6 @@ It will produce ./exhibitor-detail.csv
 """
 
 
-def do_crawl(job_type):
-    if job_type == "job1":
-        base_url = "http://www.anuga.com/anuga/exhibitor-search/search/index.php?fw_goto=aussteller/blaettern&&start={{pageId}}&paginatevalues=[]"
-        file_name = "./exhibitor-list.csv"
-
-        with open(file_name, 'w') as f:
-            writer = csv.writer(f, csv.excel)
-
-            for i in range(0,7301,20):
-                url = base_url.replace("{{pageId}}", str(i))
-                print('crawling.. => '+url)
-
-                soup = BeautifulSoup(urlopen(url).read())
-
-                exhibitors_list = soup.select('.ergebnisliste > tr > td')
-
-                for i in range(int(len(exhibitors_list)/5)):
-                    exhibitor_name = exhibitors_list[i*5+1].get_text(' ').strip()
-                    exhibitor_href = exhibitors_list[i*5+1].select('a')[0].get('href')
-                    exhibitor_kid = exhibitor_href.split('kid=')[1].split('&')[0]
-                    exhibitors_addr = exhibitors_list[i*5+2].get_text().strip()
-
-                    row = [exhibitor_name, exhibitor_kid, exhibitors_addr]
-
-                    writer.writerow(row)
-
-    elif job_type == "job2":
-        base_url = "http://www.anuga.com/anuga/exhibitor-search/search/index.php?fw_goto=aussteller/details&&kid={{kid}}"
-        job1_file_name = "./exhibitor-list.csv"
-        file_name = "./exhibitor-detail.csv"
-
-        data = []
-        with open(job1_file_name, 'r') as f:
-            reader = csv.reader(f, csv.excel)
-            for row in reader:
-                data.append(row)
-
-        with open(file_name, 'w') as f:
-            writer = csv.writer(f, csv.excel)
-
-            idx = 0
-            for info in data:
-                idx = idx + 1
-                print(str(idx) + "/" +  str(len(data)) + " crawling..")
-
-                try:
-                    name = info[0]
-                    country = info[2]
-                    kid = info[1]
-                    kid = "0016049207"
-
-                    url = base_url.replace("{{kid}}", kid)
-                    soup = BeautifulSoup(urlopen(url).read())
-
-                    info_detail = " ".join(soup.select("div.widthhalf > div")[2].get_text().replace('\t','').replace('\n','').strip().split())
-
-                    addr = info_detail.split('Phone')[0].strip()
-
-                    if "Fax" in info_detail:
-                        phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
-                    else:
-                        phone = info_detail.split('Phone:')[1].split('Email')[0].strip()
-
-                    email = info_detail.split('Email:')[1].split('Website')[0].strip()
-
-                    if "Website" in info_detail:
-                        website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
-                    else:
-                        website = ""
-
-                    product_detail = soup.select("div.widthfull > div > div > div > ul.ultree")
-                    product_list = product_detail[0].select('> li')
-                    trade_show = product_detail[1].get_text().strip()
-
-                    big_categories = []
-                    middle_categories = []
-                    small_categories = []
-
-                    # 대분류
-                    for product in product_list:
-                        big_one_name = product.select('a')[0].get_text().strip()
-                        big_categories.append(big_one_name)
-
-                        # 중분류
-                        middle_list = product.select('> ul')
-                        for middle_one in middle_list:
-                            middle_one_name = middle_one.select('a')[0].get_text().strip()
-                            middle_categories.append(middle_one_name)
-
-                            # 소분류
-                            small_list = middle_one.select('ul')
-                            for small_one in small_list:
-                                small_one_name = small_one.select('a')[0].get_text().strip()
-                                small_categories.append(small_one_name)
-
-                    big_categories_str = ", ".join(big_categories)
-                    middle_categories_str = ", ".join(middle_categories)
-                    small_categories_str = ", ".join(small_categories)
-
-                    row = [name, country, addr, phone, email, website, big_categories_str, middle_categories_str, small_categories_str, trade_show]
-
-                    writer.writerow(row)
-                except:
-                    print(str(idx) + "/" +  str(len(data)) + " crawling.. FAILED============================")
-
-
-    else:
-        job2_file_name = "./exhibitor-detail.csv"
-
-        data = []
-        with open(job2_file_name, 'r') as f:
-            reader = csv.reader(f, csv.excel)
-            for row in reader:
-                data.append(row)
-
-        save_spreadsheet("exhibitors.xlsx", data)
-        print("exhibitors.xlsx file is succesfully created.")
-
-
 def save_spreadsheet(filename, data):
     wb = Workbook()
     ws = wb.active
@@ -179,5 +60,135 @@ def save_spreadsheet(filename, data):
 
     wb.save(filename)
 
+
+def do_crawl_job1():
+    base_url = "http://www.anuga.com/anuga/exhibitor-search/search/index.php?fw_goto=aussteller/blaettern&&start={{pageId}}&paginatevalues=[]"
+    file_name = "./exhibitor-list.csv"
+
+    with open(file_name, 'w') as f:
+        writer = csv.writer(f, csv.excel)
+
+        for i in range(0,7301,20):
+            url = base_url.replace("{{pageId}}", str(i))
+            print('crawling.. => '+url)
+
+            soup = BeautifulSoup(urlopen(url).read())
+
+            exhibitors_list = soup.select('.ergebnisliste > tr > td')
+
+            for i in range(int(len(exhibitors_list)/5)):
+                exhibitor_name = exhibitors_list[i*5+1].get_text(' ').strip()
+                exhibitor_href = exhibitors_list[i*5+1].select('a')[0].get('href')
+                exhibitor_kid = exhibitor_href.split('kid=')[1].split('&')[0]
+                exhibitors_addr = exhibitors_list[i*5+2].get_text().strip()
+
+                row = [exhibitor_name, exhibitor_kid, exhibitors_addr]
+
+                writer.writerow(row)
+
+def do_crawl_job2(start_line, end_line):
+    base_url = "http://www.anuga.com/anuga/exhibitor-search/search/index.php?fw_goto=aussteller/details&&kid={{kid}}"
+    job1_file_name = "./exhibitor-list.csv"
+    file_name = "./exhibitor-detail-"+str(start_line)+"-"+str(end_line)+".csv"
+
+    data = []
+    with open(job1_file_name, 'r') as f:
+        reader = csv.reader(f, csv.excel)
+        for row in reader:
+            data.append(row)
+
+    data = data[start_line:end_line]
+
+    with open(file_name, 'w') as f:
+        writer = csv.writer(f, csv.excel)
+
+        idx = 0
+        for info in data:
+            idx = idx + 1
+            print(str(idx) + "/" +  str(len(data)) + " crawling.. from " + str(start_line) + " to " + str(end_line))
+
+            try:
+                name = info[0]
+                country = info[2]
+                kid = info[1]
+
+                url = base_url.replace("{{kid}}", kid)
+                soup = BeautifulSoup(urlopen(url).read())
+
+                info_detail = " ".join(soup.select("div.widthhalf > div")[2].get_text().replace('\t','').replace('\n','').strip().split())
+
+                addr = info_detail.split('Phone')[0].strip()
+
+                if "Fax" in info_detail:
+                    phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
+                else:
+                    phone = info_detail.split('Phone:')[1].split('Email')[0].strip()
+
+                if "Email" in info_detail:
+                    email = info_detail.split('Email:')[1].split('Website')[0].strip()
+                else:
+                    email = ""
+
+                if "Website" in info_detail:
+                    website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
+                else:
+                    website = ""
+
+                product_detail = soup.select("div.widthfull > div > div > div > ul.ultree")
+                product_list = product_detail[0].select('> li')
+                trade_show = product_detail[1].get_text().strip()
+
+                big_categories = []
+                middle_categories = []
+                small_categories = []
+
+                # 대분류
+                for product in product_list:
+                    big_one_name = product.select('a')[0].get_text().strip()
+                    big_categories.append(big_one_name)
+
+                    # 중분류
+                    middle_list = product.select('> ul')
+                    for middle_one in middle_list:
+                        middle_one_name = middle_one.select('a')[0].get_text().strip()
+                        middle_categories.append(middle_one_name)
+
+                        # 소분류
+                        small_list = middle_one.select('ul')
+                        for small_one in small_list:
+                            small_one_name = small_one.select('a')[0].get_text().strip()
+                            small_categories.append(small_one_name)
+
+                big_categories_str = ", ".join(big_categories)
+                middle_categories_str = ", ".join(middle_categories)
+                small_categories_str = ", ".join(small_categories)
+
+                row = [name, country, addr, phone, email, website, big_categories_str, middle_categories_str, small_categories_str, trade_show, url]
+
+                writer.writerow(row)
+            except:
+                print(str(idx) + "/" +  str(len(data)) + " FAILED: " + url)
+
+
+def do_crawl_save(job2_file_name):
+    data = []
+    with open(job2_file_name, 'r') as f:
+        reader = csv.reader(f, csv.excel)
+        for row in reader:
+            data.append(row)
+
+    save_spreadsheet("exhibitors.xlsx", data)
+    print("exhibitors.xlsx file is succesfully created.")
+
+
 if __name__ == "__main__":
-    do_crawl(sys.argv[1])
+    job_type = sys.argv[1]
+
+    if job_type == "job1":
+        do_crawl_job1()
+    elif job_type == "job2":
+        start_line = int(sys.argv[2])
+        end_line = int(sys.argv[3])
+        do_crawl_job2(start_line, end_line)
+    else:
+        do_crawl_save(sys.argv[2])
