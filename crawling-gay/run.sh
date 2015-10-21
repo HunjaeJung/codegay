@@ -4,9 +4,7 @@
 ### Beat 크롤링 프로그램을 Autorun 합니다. 자동으로 verticalN*2등분하여 tmux를 split하고, 크롤링을 시작합니다.
 verticalN=5
 start="0"
-start="5200"
 end="7318"
-end="5300"
 
 file="python3 doori_crawler.py"
 
