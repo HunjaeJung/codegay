@@ -12,9 +12,9 @@ from openpyxl.cell import get_column_letter
 
 """
 
-# Title         : Get company information
+# Title         : Get exhibitors list and detail information
 # Author        : Hunjae Jung
-# Date          : 2015-10-20
+# Date          : 2015-10-21
 # Description   :
 
 - Job 1
@@ -38,8 +38,8 @@ http://www.anuga.com/anuga/exhibitor-search/search/index.php?fw_goto=aussteller/
 1. python3 doori_crawler.py job1
 It will produce ./exhibitor-list.csv
 
-2. python3 doori_crawler.py job2
-It will produce ./exhibitor-detail.csv
+2. python3 doori_crawler.py job2 {{from}} {{to}}
+It will produce ./result-detail-{{from}}-{{to}}.csv and ./result-detail-{{from}}-{{to}}.xlsx
 
 """
 
@@ -89,7 +89,7 @@ def do_crawl_job1():
 def do_crawl_job2(start_line, end_line):
     base_url = "http://www.anuga.com/anuga/exhibitor-search/search/index.php?fw_goto=aussteller/details&&kid={{kid}}"
     job1_file_name = "./exhibitor-list.csv"
-    file_name = "./exhibitor-detail-"+str(start_line)+"-"+str(end_line)+".csv"
+    file_name = "./result-detail-"+str(start_line)+"-"+str(end_line)+".csv"
 
     data = []
     with open(job1_file_name, 'r') as f:
@@ -169,6 +169,8 @@ def do_crawl_job2(start_line, end_line):
             except:
                 print(str(idx) + "/" +  str(len(data)) + " FAILED: " + url)
 
+    return file_name
+
 
 def do_crawl_save(job2_file_name):
     data = []
@@ -177,8 +179,9 @@ def do_crawl_save(job2_file_name):
         for row in reader:
             data.append(row)
 
-    save_spreadsheet("exhibitors.xlsx", data)
-    print("exhibitors.xlsx file is succesfully created.")
+    result_file = job2_file_name.split('.csv')[0] + ".xlsx"
+    save_spreadsheet(result_file, data)
+    print(result_file + " file is succesfully created.")
 
 
 if __name__ == "__main__":
@@ -189,6 +192,7 @@ if __name__ == "__main__":
     elif job_type == "job2":
         start_line = int(sys.argv[2])
         end_line = int(sys.argv[3])
-        do_crawl_job2(start_line, end_line)
+        file_name = do_crawl_job2(start_line, end_line)
+        do_crawl_save(file_name)
     else:
         do_crawl_save(sys.argv[2])
