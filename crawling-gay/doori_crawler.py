@@ -90,6 +90,7 @@ def do_crawl_job2(start_line, end_line):
     base_url = "http://www.anuga.com/anuga/exhibitor-search/search/index.php?fw_goto=aussteller/details&&kid={{kid}}"
     job1_file_name = "./exhibitor-list.csv"
     file_name = "./result-detail-"+str(start_line)+"-"+str(end_line)+".csv"
+    failed_list = "./result-failed-"+str(start_line)+"-"+str(end_line)+".csv"
 
     data = []
     with open(job1_file_name, 'r') as f:
@@ -99,75 +100,80 @@ def do_crawl_job2(start_line, end_line):
 
     data = data[start_line:end_line]
 
-    with open(file_name, 'w') as f:
-        writer = csv.writer(f, csv.excel)
+    with open(failed_list, 'w') as failed_f:
+        fail_writer = csv.writer(failed_f, csv.excel)
 
-        idx = 0
-        for info in data:
-            idx = idx + 1
-            print(str(idx) + "/" +  str(len(data)) + " crawling.. from " + str(start_line) + " to " + str(end_line))
+        with open(file_name, 'w') as f:
+            writer = csv.writer(f, csv.excel)
 
-            try:
-                name = info[0]
-                country = info[2]
-                kid = info[1]
+            idx = 0
+            for info in data:
+                idx = idx + 1
+                print(str(idx) + "/" +  str(len(data)) + " crawling.. from " + str(start_line) + " to " + str(end_line))
 
-                url = base_url.replace("{{kid}}", kid)
-                soup = BeautifulSoup(urlopen(url).read())
+                try:
+                    name = info[0]
+                    country = info[2]
+                    kid = info[1]
 
-                info_detail = " ".join(soup.select("div.widthhalf > div")[2].get_text().replace('\t','').replace('\n','').strip().split())
+                    url = base_url.replace("{{kid}}", kid)
+                    soup = BeautifulSoup(urlopen(url).read())
 
-                addr = info_detail.split('Phone')[0].strip()
+                    info_detail = " ".join(soup.select("div.widthhalf > div")[2].get_text().replace('\t','').replace('\n','').strip().split())
 
-                if "Fax" in info_detail:
-                    phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
-                else:
-                    phone = info_detail.split('Phone:')[1].split('Email')[0].strip()
+                    addr = info_detail.split('Phone')[0].strip()
 
-                if "Email" in info_detail:
-                    email = info_detail.split('Email:')[1].split('Website')[0].strip()
-                else:
-                    email = ""
+                    if "Fax" in info_detail:
+                        phone = info_detail.split('Phone:')[1].split('Fax')[0].strip()
+                    else:
+                        phone = info_detail.split('Phone:')[1].split('Email')[0].strip()
 
-                if "Website" in info_detail:
-                    website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
-                else:
-                    website = ""
+                    if "Email" in info_detail:
+                        email = info_detail.split('Email:')[1].split('Website')[0].strip()
+                    else:
+                        email = ""
 
-                product_detail = soup.select("div.widthfull > div > div > div > ul.ultree")
-                product_list = product_detail[0].select('> li')
-                trade_show = product_detail[1].get_text().strip()
+                    if "Website" in info_detail:
+                        website = info_detail.split('Website:')[1].strip().split(' ')[0].strip()
+                    else:
+                        website = ""
 
-                big_categories = []
-                middle_categories = []
-                small_categories = []
+                    product_detail = soup.select("div.widthfull > div > div > div > ul.ultree")
+                    product_list = product_detail[0].select('> li')
+                    trade_show = product_detail[1].get_text().strip()
 
-                # 대분류
-                for product in product_list:
-                    big_one_name = product.select('a')[0].get_text().strip()
-                    big_categories.append(big_one_name)
+                    big_categories = []
+                    middle_categories = []
+                    small_categories = []
 
-                    # 중분류
-                    middle_list = product.select('> ul')
-                    for middle_one in middle_list:
-                        middle_one_name = middle_one.select('a')[0].get_text().strip()
-                        middle_categories.append(middle_one_name)
+                    # 대분류
+                    for product in product_list:
+                        big_one_name = product.select('a')[0].get_text().strip()
+                        big_categories.append(big_one_name)
 
-                        # 소분류
-                        small_list = middle_one.select('ul')
-                        for small_one in small_list:
-                            small_one_name = small_one.select('a')[0].get_text().strip()
-                            small_categories.append(small_one_name)
+                        # 중분류
+                        middle_list = product.select('> ul')
+                        for middle_one in middle_list:
+                            middle_one_name = middle_one.select('a')[0].get_text().strip()
+                            middle_categories.append(middle_one_name)
 
-                big_categories_str = ", ".join(big_categories)
-                middle_categories_str = ", ".join(middle_categories)
-                small_categories_str = ", ".join(small_categories)
+                            # 소분류
+                            small_list = middle_one.select('ul')
+                            for small_one in small_list:
+                                small_one_name = small_one.select('a')[0].get_text().strip()
+                                small_categories.append(small_one_name)
 
-                row = [name, country, addr, phone, email, website, big_categories_str, middle_categories_str, small_categories_str, trade_show, url]
+                    big_categories_str = ", ".join(big_categories)
+                    middle_categories_str = ", ".join(middle_categories)
+                    small_categories_str = ", ".join(small_categories)
 
-                writer.writerow(row)
-            except:
-                print(str(idx) + "/" +  str(len(data)) + " FAILED: " + url)
+                    row = [name, country, addr, phone, email, website, big_categories_str, middle_categories_str, small_categories_str, trade_show, url]
+
+                    writer.writerow(row)
+                except:
+                    row = [str(idx), url]
+                    fail_writer.writerow(row)
+                    print(str(idx) + "/" +  str(len(data)) + " FAILED: " + url)
 
     return file_name
 
