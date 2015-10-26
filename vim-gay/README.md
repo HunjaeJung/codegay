@@ -2,6 +2,7 @@
 
 
 ## 파일관련
+- `:help keyword`: keyword에 대해 모르겠으면 일단 help 때리고 보자!
 - html 파일을 열고 `:!open %`하면 바로 브라우져를 실행할 수 있다!
 - **`.vimrc` 수정 후 콘솔에서 `source ~/.vimrc`하는 대신 `:so %`하면 된다!**
 - `<CTRL-^>`: 이전 열었던 파일 열기 (CTRL+6을 의미함. 원래 <CTRL> 키와 조합된 문자 표기시엔 대문자로 표기)
@@ -59,6 +60,31 @@ ab pdb@ import pdb; pdb.set_trace()
 ia time0@ <C-R>=strftime("%Y.%m.%d-%H:%M:%S")<CR>
 ia time1@ <C-R>=strftime("%c")<CR>
 ```
+- `<CTRL-R>"`: 최근 복사된 내용이 들어있는 레지스터의 내용을 붙여넣음.
+- `{visual block}=`: visual block 해두고, = 한번만 누르면 indent!
+- `=G`: 그냥 이게 현재행부터 맨 아래까지 indent 였음.
+- **자동완성**: `<CTRL+N>`, `<CTRL+P>` 추천 위 아래로 이동!
+- `TOhtml`: 현재 문서를 html로 변경시켜준다!!
+
+## 녹화
+- `qa`: a라는 레지스터에 리코딩 시작.
+- `q`: 녹화 종료
+- `qA`: a라는 레지스터에 덮어씀.(리코딩 시작)
+- `@a`: a 매크로 실행
+- `@@`: 이전에 실행했던 매크로 실행
+- `:reg a`: a 매크로에 있는 명령어들 확인 
+
+
+## 키매핑
+- nmap key command: 일반 모드에서
+- imap key command: 입력 모드에서
+- vmap key command: 비주얼 모드에서
+- cmap key command: 명령행 모드에서
+- 시스템 클립보드에 복사..쩐다
+```
+noremap <leader>y "*y
+noremap <leader>p "*p
+```
 
 
 ## 문자열 찾기/교체
@@ -71,11 +97,11 @@ ia time1@ <C-R>=strftime("%c")<CR>
 
 ## References
 - http://vimawesome.com/
-- [Markdown Preview for Vim](https://github.com/shime/vim-livedown)
 - [Vim+Tmux workshop](https://github.com/nicknisi/vim-workshop)
 
 
 ## Livedown
+- [Markdown Preview for Vim](https://github.com/shime/vim-livedown)
 
 ```
 " launch the Livedown server and preview your markdown file
