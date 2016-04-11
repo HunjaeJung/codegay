@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>e.stopPropagation()</title>
+  </head>
+  <style>
+    #e-1 { width: 300px; height: 300px; display: inline-block; background-color:red;}
+    #e-2 { width: 200px; height: 200px; display: inline-block; background-color:green;}
+    #e-3 { width: 100px; height: 100px; display: inline-block; background-color:blue;}
+  </style>
+  <body>
+    <div id="e-1">
+      <div id="e-2">
+        <div id="e-3">
+          <a id="a-1" href="http://hunjae.com">hello</a>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    document.getElementById("e-1").onclick = function(e) {
+      alert('e-1');
+    }
+    document.getElementById("e-2").onclick = function(e) {
+      alert('e-2');
+    }
+    document.getElementById("e-3").onclick = function(e) {
+      e.stopPropagation();
+      alert('e-3');
+    }
+    document.getElementById("a-1").onclick = function(e) {
+      e.preventDefault();
+      alert('a');
+    }
+  </script>
+</html>
