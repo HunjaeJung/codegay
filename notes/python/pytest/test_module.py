@@ -13,8 +13,13 @@ class TestStringMethods(unittest.TestCase):
         s = 'hello world'
         self.assertEqual(s.split(), ['hello','world'])
         with self.assertRaises(TypeError):
+            # seperator is not string
             s.split(2)
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # unittest.main()
+
+    # We can run test with a finer level of control
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestStringMethods)
+    unittest.TextTestRunner(verbosity=2).run(suite)
